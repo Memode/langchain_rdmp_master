@@ -14,6 +14,6 @@ if __name__ == '__main__':
     # response = agent.invoke({"input": inputs})
     # print(response)
 
-    inputs = "请查询燕鸽湖手机专卖店NX.01.01.02.001.14的渠道酬金"
+    inputs = "请查询燕鸽湖手机专卖店的渠道酬金"
     response = agent.invoke({"input": inputs})
     print(response)
