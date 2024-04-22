@@ -6,14 +6,14 @@
 # print(answer)
 
 
-from agent import ConversationAgent
+from agent import ConversationAgent,welcome_agent
 
 agent = ConversationAgent()
 print(dir(ConversationAgent))
 # agent.seed_agent()
 # agent.generate_stage_analyzer(verbose=True)
 
-
+print(welcome_agent())
 # import re
 #
 # s = '("part1","part2")'

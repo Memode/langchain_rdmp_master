@@ -23,7 +23,7 @@ BASIC_TEMPLATE="""
 3. 用户问题：今天股市表现如何？你的回答：抱歉我只负责回答和渠道积分结算相关的问题
 
 过去的聊天记录:
-{conversation_history}
+{chat_history}
 
 用户的问题: 
 {question}
@@ -31,65 +31,13 @@ BASIC_TEMPLATE="""
 你的回答：
 """
 
-
 STAGE_ANALYZER_INCEPTION_PROMPT="""
-你是一个帮助对话聊天机器人确定聊天阶段的推理助理，你根据聊天记录来推理和确定目前AI和用户的对话处于哪个阶段。
-过去的聊天记录以"==="为标记开始，以"***"为标记结束。
-用户的聊天内容以"用户:"开头，AI的系统回复以"AI:"开头。
-请仔细分析聊天记录step by step，并根据以下标准判断对话阶段：
-0.闲聊阶段: 在这个阶段和用户闲聊，尽可能勾起用户的兴趣，要顺着用户的话往下说，找到用户对某个话题感兴趣，为后续阶段做铺垫，你的输出为: 0
-1. 如果你发现在用户最近的一条聊天内容和用户的问题中，都提到要积分规则的话题，则认为用户进入第一个阶段，你的输出为: 1
-2. 如果你发现在用户最近的一条聊天内容和用户的问题中，都提到要查询积分结算的话题，则认为用户进入第二个阶段，你的输出为：2
-
-过去的聊天记录：
-===
-{conversation_history}
-***
-
-用户的问题:
-{question}
-
-你的回答只能是两种数字的一种，不要有其他文字描述
-你的回答：
-"""
-
-RECOMMEND_TEMPLATE="""
-你是一个渠道积分规则解释和积分结算查询的机器人，你的工作如下：
-1. 你通过查询历史聊天记录用户最近的两次对话内容，判断用户的兴趣点，兴趣点被标记为“兴趣点”。用户最近的两次对话内容，是指聊天记录里最靠近以"用户："开头且在文本位置底部、靠近"***"的内容。
-2. 你要使用工具包查询和用户"兴趣点”相关的渠道积分规则及渠道结算的信息，包括积分标准、发放规则和满足发放要求。
-3. 当你通过工具获取渠道积分发放标准信息后，你要引导用户进行问题询问。
-
-工具包:
------
-你有如下工具可以使用：
-{tools}
-
-要使用工具包，你必须按照如下格式进行思考和输出:
-```
-Thought: Do I need to use a tool?YES
-Action: the action to take, should be one of {tool_names}
-Action Input: the input to the action,should be a string
-Observation: the result of the action
-```
-当你已经得到了一个答案，你必须按照如下格式进行输出：
-```
-Thought: Do I get the answer?YES. OR  Do the tools help?NO.
-AI: [your response here, if previously used a tool, rephrase latest observation]
-```
-当你无法将用户兴趣点和RdmpRuleSearch工具中的产品匹配时，你必须按照如下格式进行输出：
-```
-Thought: Do I get the answer?NO.
-AI: [Sorry]
-```
-Begin!
-
-过去的聊天记录以"==="为标记开始，以”***“为标记结束。
-用户的输入：{input}
-过去的聊天记录：
-===
-{conversation_history}
-***
-{agent_scratchpad}
-"""
-
-
+        请针对 >>> 和 <<<中间的用户问题，选择一个合适的工具去回答它的问题。如果是A、B项，只要用A、B的选项字母告诉我答案。
+        如果是C项，返回C选项，并且返回渠道名称及渠道NX编码值
+        >>>用户当前的问题: {question} 参考历史对话信息：{chat_history}<<<
+        我们有的工具包括:
+        A.闲聊，不需要选择工具工具
+        B.一个能够解释渠道积分政策规则的工具
+        C，一个能够查询渠道积分结算的工具
+        D，都不合适
+    """

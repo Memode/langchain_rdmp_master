@@ -3,7 +3,7 @@
 - 新增虚拟环境
 
 ```
-conda create langchain_rdmp python=3.11
+conda create -n langchain_rdmp_master python=3.10
 ```
 
 - 查看虚拟环境
@@ -13,7 +13,7 @@ conda info --envs
 
 - 启动虚拟环境
 ```
-conda activate langchain_rdmp
+conda activate langchain_rdmp_master
 ```
 
 - 安装依赖包

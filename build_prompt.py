@@ -9,34 +9,6 @@ from chromadb import Documents, EmbeddingFunction, Embeddings
 from transformers import AutoTokenizer, AutoModel
 import torch
 
-
-class MyEmbeddingFunction(EmbeddingFunction):
-    def __init__(self, model_name, device="cpu") -> None:
-        self.model_name = model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModel.from_pretrained(model_name)
-        self.device = torch.device(device)
-        self.model.to(self.device)
-
-    @staticmethod
-    def mean_pooling(model_output, attention_mask):
-        token_embeddings = model_output[0]  # First element of model_output contains all token embeddings
-        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-        return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
-
-    def __call__(self, input: Documents) -> Embeddings:
-        encoded_input = self.tokenizer(list(input), padding=True, truncation=True, return_tensors='pt').to(self.device)
-        # print(encoded_input)
-        with torch.no_grad():
-            model_output = self.model(**encoded_input)
-        if "bge" in self.model_name.lower():
-            sentence_embeddings = model_output[0][:, 0]
-        else:
-            sentence_embeddings = self.mean_pooling(model_output, encoded_input['attention_mask'])
-        sentence_embeddings = torch.nn.functional.normalize(sentence_embeddings, p=2, dim=1)
-        return sentence_embeddings.cpu().numpy().tolist()
-
-
 class PromptMessage():
     def __init__(self) -> None:
         # 数据库路径
@@ -51,7 +23,6 @@ class PromptMessage():
             self.collection = self.client.get_or_create_collection(
                 name="prompt_info",
                 # metadata={"hnsw:space": "cosine"},
-                # embedding_function=MyEmbeddingFunction(model_name="E:\\workspace\\Langchain-Chatchat-master\\m3e-base", device="cpu")
             )
 
             # 初始化数据
@@ -79,7 +50,6 @@ class PromptMessage():
             self.collection = self.client.get_or_create_collection(
                 name="prompt_info",
                 # metadata={"hnsw:space": "cosine"},
-                # embedding_function=MyEmbeddingFunction(model_name="E:\\workspace\\Langchain-Chatchat-master\\m3e-base", device="cpu")
             )
 
 

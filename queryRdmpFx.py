@@ -5,7 +5,7 @@ import re
 
 
 
-def queryRdmp(channel):
+def queryRdmp(channel_name, channel_code):
     db_user = "root"
     db_pass = "123456"
     db_host = "localhost"
@@ -21,15 +21,8 @@ def queryRdmp(channel):
     )
     # 创建游标
     cursor = connection.cursor()
-    # 使用正则表达式截取字母和数字
-    pattern = r'NX.[a-zA-Z.0-9]+'
-    match = re.findall(pattern, channel)
 
-
-    channelCode = match[0]
-    channelName = channel.replace(channelCode,'')
-
-    sql = f"select * from tmp_fx_240415 where 渠道名称 like '%{channelName}%' or 渠道NX编码 like '%{channelCode}' order by 统计月份 limit 5"
+    sql = f"select * from tmp_fx_240415 where 渠道名称 like '%{channel_name}%' or 渠道NX编码 like '%{channel_code}' order by 统计月份 limit 6"
     try:
         print(sql)
         cursor.execute(sql)
