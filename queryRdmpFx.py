@@ -49,4 +49,4 @@ def queryRdmp(channel_name, channel_code):
     return results
 
 if __name__ == '__main__':
-    print(queryRdmp("燕鸽湖手机专卖店NX.01.01.02.001.14"))
+    print(queryRdmp("燕鸽湖手机专卖店"))
