@@ -22,7 +22,7 @@ def queryRdmp(channel_name, channel_code):
     # 创建游标
     cursor = connection.cursor()
 
-    sql = f"select * from tmp_fx_240415 where 渠道名称 like '%{channel_name}%' or 渠道NX编码 like '%{channel_code}' order by 统计月份 limit 6"
+    sql = f"select * from test_db.reward_fx where A010 like '%{channel_name}%' or A011 like '%{channel_code}' order by 统计月份 limit 6"
     try:
         print(sql)
         cursor.execute(sql)
