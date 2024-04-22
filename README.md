@@ -20,9 +20,6 @@ conda activate langchain_rdmp_master
 ```
 pip install -r requirements.txt 
 ```
-- 使用 Poetry 管理打包三方库
-
-
 
 - 启动服务
 ```
