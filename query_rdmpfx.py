@@ -1,5 +1,12 @@
 import pymysql
+from langchain_community.llms import Tongyi
+from langchain.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
+from langchain_community.utilities import SQLDatabase
 
+from redis_tool import set_observation
+from template import *
 
 
 def queryRdmp(channel_name, channel_code, month_begin, month_end):
@@ -236,5 +243,81 @@ def queryRdmp(channel_name, channel_code, month_begin, month_end):
         connection.close()
     return results
 
-if __name__ == '__main__':
-    print(queryRdmp("燕鸽湖手机专卖店"))
+
+def query_rdmpfx(query, chat_history:str = ""):
+    llm = Tongyi()
+    db_user = "root"
+    db_password = "123456"
+    db_host = "localhost"
+    db_name = "test_db"
+    db = SQLDatabase.from_uri(f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}")
+
+    def get_schema(_):
+        file_path = "./tables_info.txt"
+        # 尝试打开文件
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()  # 读取文件内容
+        return content
+        # # 替换使用制定表信息
+        # return db.get_table_info()
+    #
+    def run_query(query):
+        return db.run(query)
+
+    def get_sql(x):
+        return x.split("```sql")[1].split("```")[0]
+
+    def get_json(x):
+        return x.split("```json")[1].split("```")[0]
+
+    # 获取sql
+    template_sql = PromptTemplate.from_template(TEMPLATE_SQL)
+    chain_sql = ({"info": get_schema,
+                  "question": RunnablePassthrough(),
+                  "chat_history":RunnablePassthrough()}
+                 | template_sql
+                 | llm
+                 | StrOutputParser()
+                 | RunnableLambda(get_sql))
+
+    print(chain_sql.invoke({"question":query,"chat_history":chat_history}))
+
+    # 获取sql执行结果
+    template_sql_res = PromptTemplate.from_template(TEMPLATE_SQL_RES)
+    chain_sql0 = ({"info": get_schema,
+                  "question": RunnablePassthrough(),
+                  "chat_history":RunnablePassthrough(),
+                   "query":chain_sql}
+                  | RunnablePassthrough.assign(response=lambda x: run_query(x["query"]))
+                  | template_sql_res
+                  | llm
+                  | StrOutputParser())
+
+    # 获取执行的sql
+    response = chain_sql0.invoke({"question":query,"chat_history":chat_history})
+    print("response"+response)
+    # 根据sql执行结果生成图表json 格式数据
+    template_json = PromptTemplate.from_template(TEMPLATE_ECHART_JSON)
+
+    chain_sql0 = ({"info": get_schema,
+                  "question": RunnablePassthrough(),
+                  "chat_history":RunnablePassthrough(),
+                  "query":chain_sql}
+                  | RunnablePassthrough.assign(response=lambda x: run_query(x["query"]))
+                  | template_json
+                  | llm
+                  | StrOutputParser()
+                  | RunnableLambda(get_json))
+
+    # 获取执行的sql
+    json_resp = chain_sql0.invoke({"question": query, "chat_history": chat_history})
+    print("json_resp :: " + json_resp)
+    set_observation(queryRdmpFx=str(json_resp))
+
+    return  response
+
+
+
+# if __name__ == '__main__':
+#     print(query_rdmpfx({"NX.01.01.02.001.19","查询2024年份结算积分明细"}))
+    # print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))

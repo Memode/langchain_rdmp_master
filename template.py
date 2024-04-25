@@ -79,6 +79,7 @@ ECHARTS_PROMPT = """
         You need to validate the generated JSON format data; if the validation fails, you need to regenerate it until it finally meets the requirements and passes the validation.
         Goal: Only convert one type of chart, ensuring strict adherence to the example format for the conversion. 
         The entire result must be output, and instances of "other settlement points types, etc." are not allowed. Ultimately, only JSON code result data is allowed to be output.
+        json code is :'''json\n...\n'''
         Begin!
         
         user’s question：
@@ -128,4 +129,82 @@ ECHARTS_PROMPT = """
         ]
         }}
         }}
+        
+    
 """
+
+TEMPLATE_SQL = """
+    请通过写的sql代码来回答对应问题，依据如下数据库信息{info}，
+    \n需要回答的问题是:{question}
+    \n 历史信息{chat_history} 
+    \n注意仅需要通过sql代码回答，不需要文字
+    \n 代码形式如下:'''sql\n...\n'''
+"""
+
+TEMPLATE_SQL_RES = """
+    请通过综合如下的数据库信息、问题、sq1代码、sq1代码的执行结果给出问题的自然语言回答:
+    \n 数据库信息{info}
+    \n 需要网答问题是:{question} 
+    \n历史信息{chat_history}
+    \n sql代码:{query} 
+    \n sql代码执行结果: {response} \n
+"""
+
+TEMPLATE_ECHART_JSON = """
+    Task: Your task is to return JSON data between >>> and <<< based on the user’s question and chat history information..
+    Action: Below are provided JSON formats for three types of icons, you need to convert the data returned by the API into one of them, 
+    filling in the type_name according to the current data theme, for example, "A channel settlement points data" is "A channel settlement points", and so on. 
+    You need to validate the generated JSON format data; if the validation fails, you need to regenerate it until it finally meets the requirements and passes the validation.
+    Goal: Only convert one type of chart, ensuring strict adherence to the example format for the conversion. 
+    The entire result must be output, and instances of "other settlement points types, etc." are not allowed. Ultimately, only JSON code result data is allowed to be output.
+    json code is :'''json\n...\n'''
+    Begin!
+    \n 数据库信息{info}
+    \n 需要网答问题是:{question} 
+    \n历史信息{chat_history}
+    \n sql代码:{query} 
+    \n sql代码执行结果: {response} \n
+    \n注意仅需要通过json代码回答，不需要文字
+    \n 代码形式如下:'''json\n...\n'''
+    
+    pie JSON Schema示例：
+        {{
+        "chart_type": "pie",
+        "data": {{
+        "series": [
+        {{"name": "category1", "value": value1}},
+        {{"name": "category2", "value": value2}},
+        {{"name": "category3", "value": value3}}
+        ]
+        }}
+        }}
+              
+        bar JSON Schema示例：
+        {{
+        "chart_type": "bar",
+        "data": {{
+        "categories": ["category1", "category2", "category3"],
+        "series": [
+        {{
+        "name": "type_name",
+        "data": [value1, value2, value3]
+        }}
+        ]
+        }}
+        }}
+
+        line JSON Schema示例：
+        {{
+        "chart_type": "line",
+        "data": {{
+        "categories": ["category1", "category2", "category3"],
+        "series": [
+        {{
+        "name": "type_name",
+        "data": [value1, value2, value3]
+        }}
+        ]
+        }}
+        }}
+"""
+

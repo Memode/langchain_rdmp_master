@@ -76,17 +76,18 @@ class ConversationAgent():
 
     def step_rdmp(self):
         rdmp_fx = get_observation()
-        question = self.conversation_history[-2]
-        history_text = self.conversation_history
-        ec_message = ""
-        if rdmp_fx is not None:
-            echarts_data = self.echarts_chain.invoke({"input_text": rdmp_fx, "question": question, "chat_history": history_text})
-            echarts_text = echarts_data["text"]
-            start_index = echarts_text.find('{')
-            end_index = echarts_text.rfind('}')
-            ec_message = echarts_text[start_index:end_index+1]
-
-        return ec_message
+        # question = self.conversation_history[-2]
+        # history_text = self.conversation_history
+        # ec_message = ""
+        # if rdmp_fx is not None:
+            # echarts_data = self.echarts_chain.invoke({"input_text": rdmp_fx, "question": question, "chat_history": history_text})
+            # echarts_text = echarts_data["text"]
+            # start_index = echarts_text.find('{')
+            # end_index = echarts_text.rfind('}')
+            # ec_message = echarts_text[start_index:end_index+1]
+            # print("echarts_text"+echarts_text)
+            # ec_message = echarts_text.split("```json")[1].split("```")[0]
+        return rdmp_fx
 
     def human_step(self,input_text):
         human_message = input_text
