@@ -1,6 +1,6 @@
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from template import STAGE_ANALYZER_INCEPTION_PROMPT,BASIC_TEMPLATE
+from template import STAGE_ANALYZER_INCEPTION_PROMPT,BASIC_TEMPLATE,ECHARTS_PROMPT
 
 class StageAnalyzerChain(LLMChain):
     """
@@ -41,4 +41,21 @@ class ConversationChain_Without_Tool(LLMChain):
         )
         return cls(prompt=prompt, llm=llm, verbose=verbose)
 
+class EchartsChain(LLMChain):
+    """
+    Task：你的任务是返回json数据
+    Action：下面提供了三种图标的json格式，你需要将API返回的数据转换为其中的一种，其中type_name需要填充为当前数据主题，例如A渠道结算积分数据就是A渠道结算积分，以此类推
+    Goal：只转换一种图表即可，请确保严格按照示例格式进行转换。
+    """
+    @classmethod
+    def from_llm(cls, llm, verbose: bool = True)-> LLMChain:
 
+        prompt = PromptTemplate(
+            template=ECHARTS_PROMPT,
+            input_variables=[
+                "input_text",
+                "question",
+                "chat_history",
+            ],
+        )
+        return cls(prompt=prompt, llm=llm, verbose=verbose)

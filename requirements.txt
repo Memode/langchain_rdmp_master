@@ -19,3 +19,6 @@ loguru
 zipp
 markdown
 importlib-metadata
+python-dateutil
+redis
+#redis-py 需要通过 git 包安装

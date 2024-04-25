@@ -4,16 +4,16 @@
 # knowledge_base = build_knowledge_base(file_path)
 # answer = knowledge_base.invoke('请介绍一下上海的旅游产品')
 # print(answer)
+from redis_tool import *
 
-
-from agent import ConversationAgent,welcome_agent
-
-agent = ConversationAgent()
-print(dir(ConversationAgent))
-# agent.seed_agent()
-# agent.generate_stage_analyzer(verbose=True)
-
-print(welcome_agent())
+# from agent import ConversationAgent,welcome_agent
+#
+# agent = ConversationAgent()
+# print(dir(ConversationAgent))
+# # agent.seed_agent()
+# # agent.generate_stage_analyzer(verbose=True)
+#
+# print(welcome_agent())
 # import re
 #
 # s = '("part1","part2")'
@@ -61,9 +61,22 @@ print(welcome_agent())
 #     agent.determine_conversation_stage()
 #     flag = check_content(pattern,str(history[-2]))
 
+#
+# from datetime import datetime
+# from dateutil.relativedelta import relativedelta
+# # 获取当前日期
+# current_date = datetime.now()
+#
+# # 获取当前月份
+#
+# # 获取前7个月的月份
+# seven_months_ago = current_date - relativedelta(month=7)
+#
+# print("当前月份:", current_date.strftime('%Y%m'))
+# print("前7个月份:", seven_months_ago.strftime('%Y%m'))
 
-
-
+set_observation("key1", "queryRdmpFx")
+print(get_observation("key1"))
 
 
 

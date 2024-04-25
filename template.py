@@ -22,6 +22,31 @@ BASIC_TEMPLATE="""
 2. 用户问题：你是谁？你的回答：我是渠道积分结算的问答机器人，我只负责回答和渠道积分结算相关的问题。
 3. 用户问题：今天股市表现如何？你的回答：抱歉我只负责回答和渠道积分结算相关的问题
 
+工具包:
+-----
+你有如下工具可以使用：
+{tools}
+
+要使用工具包，你必须按照如下格式进行思考和输出:
+```
+Thought: Do I need to use a tool?YES
+Action: the action to take, should be one of {tool_names}
+Action Input: the input to the action,should be a string
+Observation: the result of the action
+```
+当你已经得到了一个答案，你必须按照如下格式进行输出：
+```
+Thought: Do I get the answer?YES. OR  Do the tools help?NO.
+AI: [your response here, if previously used a tool, rephrase latest observation]
+```
+当你无法将用户兴趣点和ProductSearch工具中的产品匹配时，你必须按照如下格式进行输出：
+```
+Thought: Do I get the answer?NO.
+AI: [Sorry]
+```
+Begin!
+
+
 过去的聊天记录:
 {chat_history}
 
@@ -41,3 +66,66 @@ STAGE_ANALYZER_INCEPTION_PROMPT="""
         C，一个能够查询渠道积分结算的工具
         D，都不合适
     """
+
+
+ECHARTS_PROMPT = """
+        # Task：你的任务是根据 用户的问题 和历史信息 对>>>和<<<中间的数据返回json数据
+        # Action：下面提供了三种图标的json格式，你需要将API返回的数据转换为其中的一种，其中type_name需要填充为当前数据主题，例如A渠道结算积分数据就是A渠道结算积分，以此类推
+        # Goal：只转换一种图表即可，请确保严格按照示例格式进行转换，转换必须将全部结果输出，不允许出现'其他结算积分类型，依此类推'的情况，
+        # 最终只允许输出json代码结果数据，你要对生成的json格式数据进行验证，如果验证不通过需要重新生成，只到最终满足要求，验证通过。
+        Task: Your task is to return JSON data between >>> and <<< based on the user’s question and chat history information..
+        Action: Below are provided JSON formats for three types of icons, you need to convert the data returned by the API into one of them, 
+        filling in the type_name according to the current data theme, for example, "A channel settlement points data" is "A channel settlement points", and so on. 
+        You need to validate the generated JSON format data; if the validation fails, you need to regenerate it until it finally meets the requirements and passes the validation.
+        Goal: Only convert one type of chart, ensuring strict adherence to the example format for the conversion. 
+        The entire result must be output, and instances of "other settlement points types, etc." are not allowed. Ultimately, only JSON code result data is allowed to be output.
+        Begin!
+        
+        user’s question：
+        {question}
+        
+        chat history information: 
+        {chat_history} 
+        
+        >>>{input_text} <<<  
+            
+        pie JSON Schema示例：
+        {{
+        "chart_type": "pie",
+        "data": {{
+        "series": [
+        {{"name": "category1", "value": value1}},
+        {{"name": "category2", "value": value2}},
+        {{"name": "category3", "value": value3}}
+        ]
+        }}
+        }}
+              
+        bar JSON Schema示例：
+        {{
+        "chart_type": "bar",
+        "data": {{
+        "categories": ["category1", "category2", "category3"],
+        "series": [
+        {{
+        "name": "type_name",
+        "data": [value1, value2, value3]
+        }}
+        ]
+        }}
+        }}
+
+        line JSON Schema示例：
+        {{
+        "chart_type": "line",
+        "data": {{
+        "categories": ["category1", "category2", "category3"],
+        "series": [
+        {{
+        "name": "type_name",
+        "data": [value1, value2, value3]
+        }}
+        ]
+        }}
+        }}
+"""
