@@ -108,6 +108,8 @@ class queryRdmpFxTool(BaseTool):
             return "请问您的渠道NX编码是多少?"
         if channel_code:
             channel_name = None
+
+
         queryRdmpFx = query_rdmpfx(query)
         return queryRdmpFx
     async def _arun(self, query: str, run_manager: Optional[AsyncCallbackManagerForToolRun] = None) -> str:

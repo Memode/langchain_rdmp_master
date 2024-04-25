@@ -280,7 +280,7 @@ def query_rdmpfx(query, chat_history:str = ""):
                  | StrOutputParser()
                  | RunnableLambda(get_sql))
 
-    print(chain_sql.invoke({"question":query,"chat_history":chat_history}))
+    # print(chain_sql.invoke({"question":query,"chat_history":chat_history}))
 
     # 获取sql执行结果
     template_sql_res = PromptTemplate.from_template(TEMPLATE_SQL_RES)
@@ -295,7 +295,7 @@ def query_rdmpfx(query, chat_history:str = ""):
 
     # 获取执行的sql
     response = chain_sql0.invoke({"question":query,"chat_history":chat_history})
-    print("response"+response)
+    # print("response"+response)
     # 根据sql执行结果生成图表json 格式数据
     template_json = PromptTemplate.from_template(TEMPLATE_ECHART_JSON)
 
@@ -311,7 +311,7 @@ def query_rdmpfx(query, chat_history:str = ""):
 
     # 获取执行的sql
     json_resp = chain_sql0.invoke({"question": query, "chat_history": chat_history})
-    print("json_resp :: " + json_resp)
+    # print("json_resp :: " + json_resp)
     set_observation(queryRdmpFx=str(json_resp))
 
     return  response
@@ -319,5 +319,5 @@ def query_rdmpfx(query, chat_history:str = ""):
 
 
 # if __name__ == '__main__':
-#     print(query_rdmpfx({"NX.01.01.02.001.19","查询2024年份结算积分明细"}))
+#     print(query_rdmpfx({"燕鸽湖","查询企业信息"}))
     # print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))
