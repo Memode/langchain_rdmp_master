@@ -244,7 +244,7 @@ def queryRdmp(channel_name, channel_code, month_begin, month_end):
     return results
 
 
-def query_rdmpfx(query, chat_history:str = ""):
+def query_rdmpfx(query, chat_history:str = "", token: str = None):
     llm = Tongyi()
     db_user = "root"
     db_password = "123456"
@@ -260,7 +260,7 @@ def query_rdmpfx(query, chat_history:str = ""):
         return content
         # # 替换使用制定表信息
         # return db.get_table_info()
-    #
+
     def run_query(query):
         return db.run(query)
 
@@ -269,6 +269,7 @@ def query_rdmpfx(query, chat_history:str = ""):
 
     def get_json(x):
         return x.split("```json")[1].split("```")[0]
+
 
     # 获取sql
     template_sql = PromptTemplate.from_template(TEMPLATE_SQL)
@@ -282,7 +283,7 @@ def query_rdmpfx(query, chat_history:str = ""):
 
     # print(chain_sql.invoke({"question":query,"chat_history":chat_history}))
 
-    # 获取sql执行结果
+    # # 获取sql执行结果
     template_sql_res = PromptTemplate.from_template(TEMPLATE_SQL_RES)
     chain_sql0 = ({"info": get_schema,
                   "question": RunnablePassthrough(),
@@ -296,6 +297,7 @@ def query_rdmpfx(query, chat_history:str = ""):
     # 获取执行的sql
     response = chain_sql0.invoke({"question":query,"chat_history":chat_history})
     # print("response"+response)
+
     # 根据sql执行结果生成图表json 格式数据
     template_json = PromptTemplate.from_template(TEMPLATE_ECHART_JSON)
 
@@ -311,13 +313,14 @@ def query_rdmpfx(query, chat_history:str = ""):
 
     # 获取执行的sql
     json_resp = chain_sql0.invoke({"question": query, "chat_history": chat_history})
-    # print("json_resp :: " + json_resp)
-    set_observation(queryRdmpFx=str(json_resp))
+
+    set_observation(key=token, queryRdmpFx=str(json_resp))
 
     return  response
 
 
 
-# if __name__ == '__main__':
-#     print(query_rdmpfx({"燕鸽湖","查询企业信息"}))
-    # print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))
+if __name__ == '__main__':
+    # print(query_rdmpfx("燕鸽湖"))
+    print(query_rdmpfx({"燕鸽湖","查询企业信息"}))
+#     print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))

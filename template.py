@@ -27,10 +27,10 @@ BASIC_TEMPLATE="""
 你有如下工具可以使用：
 {tools}
 
-要使用工具包，你必须按照如下格式进行思考和输出:
+要使用工具包，你必须按照如下格式进行思考和输出，并把用户的\n{token}\n信息和问题信息一起提交到至工具:
 ```
 Thought: Do I need to use a tool?YES
-Action: the action to take, should be one of {tool_names}
+Action: the action to take, should be one of {tools}
 Action Input: the input to the action,should be a string
 Observation: the result of the action
 ```
@@ -39,27 +39,27 @@ Observation: the result of the action
 Thought: Do I get the answer?YES. OR  Do the tools help?NO.
 AI: [your response here, if previously used a tool, rephrase latest observation]
 ```
-当你无法将用户兴趣点和ProductSearch工具中的产品匹配时，你必须按照如下格式进行输出：
+当你无法将用户兴趣点和工具中的信息匹配时，你必须按照如下格式进行输出：
 ```
 Thought: Do I get the answer?NO.
 AI: [Sorry]
 ```
 Begin!
 
-
-过去的聊天记录:
-{chat_history}
-
-用户的问题: 
-{question}
-
-你的回答：
+\nchat history information:
+\n{chat_history}
+\nuser’s question：
+\n{question}
+\ntoken is :
+\n{token}
+\nyour answer：
+\n{answer}
 """
 
 STAGE_ANALYZER_INCEPTION_PROMPT="""
         请针对 >>> 和 <<<中间的用户问题，选择一个合适的工具去回答它的问题。如果是A、B项，只要用A、B的选项字母告诉我答案。
         如果是C项，返回C选项，并且返回渠道名称及渠道NX编码值
-        >>>用户当前的问题: {question} 参考历史对话信息：{chat_history}<<<
+        >>>\n 用户当前的问题: \n {question} \n参考历史对话信息：\n{chat_history}\n<<<
         我们有的工具包括:
         A.闲聊，不需要选择工具工具
         B.一个能够解释渠道积分政策规则的工具
@@ -151,12 +151,13 @@ TEMPLATE_SQL_RES = """
 """
 
 TEMPLATE_ECHART_JSON = """
-    Task: Your task is to return JSON data between >>> and <<< based on the user’s question and chat history information..
+    Task: Your task is to return JSON data and answer the user's question between >>> and <<< based on the user’s question and chat history information..
     Action: Below are provided JSON formats for three types of icons, you need to convert the data returned by the API into one of them, 
     filling in the type_name according to the current data theme, for example, "A channel settlement points data" is "A channel settlement points", and so on. 
     You need to validate the generated JSON format data; if the validation fails, you need to regenerate it until it finally meets the requirements and passes the validation.
     Goal: Only convert one type of chart, ensuring strict adherence to the example format for the conversion. 
-    The entire result must be output, and instances of "other settlement points types, etc." are not allowed. Ultimately, only JSON code result data is allowed to be output.
+    The entire result must be output, and instances of "other settlement points types, etc." are not allowed.
+    answer is : '''answer\n...\n''' \n 
     json code is :'''json\n...\n'''
     Begin!
     \n 数据库信息{info}
