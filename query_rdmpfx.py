@@ -1,5 +1,6 @@
 import pymysql
 from langchain_community.llms import Tongyi
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
@@ -245,7 +246,8 @@ def queryRdmp(channel_name, channel_code, month_begin, month_end):
 
 
 def query_rdmpfx(query, chat_history:str = "", token: str = None):
-    llm = Tongyi()
+    # llm = Tongyi()
+    llm = OpenAI()
     db_user = "root"
     db_password = "123456"
     db_host = "localhost"

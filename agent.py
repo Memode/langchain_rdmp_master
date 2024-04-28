@@ -5,6 +5,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentExecutor
 
 from langchain_community.llms import Tongyi
+from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
@@ -30,7 +31,8 @@ def welcome_agent():
     #     top_p=0.9
     # )
 
-    llm = Tongyi()
+    # llm = Tongyi()
+    llm = OpenAI()
     llm_chain = LLMChain(prompt=prompt, llm=llm)
     response = llm_chain.invoke({"input": "简短的欢迎词"})
     # response = "欢迎光临"
@@ -64,8 +66,8 @@ class ConversationAgent():
         #     top_p=0.9
         # )
 
-        self.llm = Tongyi()
-
+        # self.llm = Tongyi()
+        self.llm = OpenAI()
     def seed_agent(self):
         self.conversation_history.clear()
         print("——Seed Successful——")

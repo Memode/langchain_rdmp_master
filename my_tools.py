@@ -95,9 +95,17 @@ class queryRdmpFxTool(BaseTool):
     def _run(self, input: Optional[Union[str,str,str]]) -> str:
         input_json = json.loads(input)
         print(input_json,type(input_json))
-        nx_code = input_json["nx_code"]
-        token = input_json["token"]
-        chat_history = input_json["chat_history"]
+        if len(input_json) == 3:
+            nx_code = input_json.list[0]
+            token = input_json.list[1]
+            chat_history = input_json.list[2]
+        elif len(input_json) == 2:
+            nx_code = input_json.list[0]
+            token = input_json.list[1]
+        elif len(input_json) == 1:
+            nx_code = input_json.list[0]
+
+
 
 
         # 匹配多个数字以及大写字母

@@ -6,6 +6,7 @@ from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.vectorstores import Chroma
 from langchain_community.llms.chatglm3 import ChatGLM3
 from langchain_community.llms import Tongyi
+from langchain_openai import OpenAI
 
 # from langchain_chatglm3 import ChatGLM3  # 自定义 ChatGLM3 类用于加载模型
 
@@ -57,7 +58,8 @@ def build_knowledge_base(directory="./categories"):
         db = Chroma(persist_directory='Vectorstore_KnowledgeBase', embedding_function=embeddings)
     # 创建 ChatGLM3 实例
     # llm = ChatGLM3(endpoint_url="http://127.0.0.1:8000/v1/chat/completions", max_token=5000)
-    llm = Tongyi()
+    # llm = Tongyi()
+    llm = OpenAI
     retriever = db.as_retriever()  # 创建文档检索器
     knowledge_base = RetrievalQA.from_chain_type(
         llm=llm,
