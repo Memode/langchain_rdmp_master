@@ -246,8 +246,9 @@ def queryRdmp(channel_name, channel_code, month_begin, month_end):
 
 
 def query_rdmpfx(query, chat_history:str = "", token: str = None):
-    # llm = Tongyi()
-    llm = OpenAI()
+    llm = Tongyi()
+    llm.model_name="qwen-max"
+    # llm = OpenAI()
     db_user = "root"
     db_password = "123456"
     db_host = "localhost"
@@ -259,9 +260,13 @@ def query_rdmpfx(query, chat_history:str = "", token: str = None):
         # 尝试打开文件
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()  # 读取文件内容
-        return content
+
+
+        # content = db.get_table_info(["reward_fx"])
+
+
         # # 替换使用制定表信息
-        # return db.get_table_info()
+        return content
 
     def run_query(query):
         return db.run(query)
@@ -283,27 +288,29 @@ def query_rdmpfx(query, chat_history:str = "", token: str = None):
                  | StrOutputParser()
                  | RunnableLambda(get_sql))
 
-    # print(chain_sql.invoke({"question":query,"chat_history":chat_history}))
+    # str_sql = chain_sql.invoke({"question": query, "chat_history": chat_history})
+    # print("str_sql :: " + str_sql)
 
     # # 获取sql执行结果
     template_sql_res = PromptTemplate.from_template(TEMPLATE_SQL_RES)
-    chain_sql0 = ({"info": get_schema,
+    chain_sql_res = ({"info": get_schema,
                   "question": RunnablePassthrough(),
                   "chat_history":RunnablePassthrough(),
-                   "query":chain_sql}
+                  "query":chain_sql}
                   | RunnablePassthrough.assign(response=lambda x: run_query(x["query"]))
                   | template_sql_res
                   | llm
                   | StrOutputParser())
 
     # 获取执行的sql
-    response = chain_sql0.invoke({"question":query,"chat_history":chat_history})
-    # print("response"+response)
+    response = chain_sql_res.invoke({"question":query,"chat_history":chat_history})
+
+    print("response :: " + response)
 
     # 根据sql执行结果生成图表json 格式数据
     template_json = PromptTemplate.from_template(TEMPLATE_ECHART_JSON)
 
-    chain_sql0 = ({"info": get_schema,
+    chain_json = ({"info": get_schema,
                   "question": RunnablePassthrough(),
                   "chat_history":RunnablePassthrough(),
                   "query":chain_sql}
@@ -314,8 +321,8 @@ def query_rdmpfx(query, chat_history:str = "", token: str = None):
                   | RunnableLambda(get_json))
 
     # 获取执行的sql
-    json_resp = chain_sql0.invoke({"question": query, "chat_history": chat_history})
-
+    json_resp = chain_json.invoke({"question": query, "chat_history": chat_history})
+    print("json_resp :: " + json_resp)
     set_observation(key=token, queryRdmpFx=str(json_resp))
 
     return  response
@@ -323,6 +330,6 @@ def query_rdmpfx(query, chat_history:str = "", token: str = None):
 
 
 if __name__ == '__main__':
-    # print(query_rdmpfx("燕鸽湖"))
-    print(query_rdmpfx({"燕鸽湖","查询企业信息"}))
-#     print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))
+    print(query_rdmpfx("燕鸽湖"))
+    # print(query_rdmpfx({"燕鸽湖","查询结算积分"}))
+    # print(query_rdmpfx("查询2024年1月份燕鸽湖手机专卖店结算积分明细"))

@@ -5,7 +5,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentExecutor
 
 from langchain_community.llms import Tongyi
-from langchain_openai import OpenAI
+# from langchain_openai import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
@@ -31,8 +31,9 @@ def welcome_agent():
     #     top_p=0.9
     # )
 
-    # llm = Tongyi()
-    llm = OpenAI()
+    llm = Tongyi()
+    llm.model_name = "qwen-max"
+    # llm = OpenAI()
     llm_chain = LLMChain(prompt=prompt, llm=llm)
     response = llm_chain.invoke({"input": "简短的欢迎词"})
     # response = "欢迎光临"
@@ -56,7 +57,6 @@ class ConversationAgent():
     endpoint_url = "http://127.0.0.1:8000/v1/chat/completions"
     max_tokens = 4096
 
-    llm = None
 
     def __init__(self):
         # llm = ChatGLM3(
@@ -65,9 +65,9 @@ class ConversationAgent():
         #     # prefix_messages=messages,
         #     top_p=0.9
         # )
-
-        # self.llm = Tongyi()
-        self.llm = OpenAI()
+        # self.llm = OpenAI()
+        self.llm = Tongyi()
+        self.llm.model_name = "qwen-max"
     def seed_agent(self):
         self.conversation_history.clear()
         print("——Seed Successful——")
@@ -79,8 +79,10 @@ class ConversationAgent():
     def step(self):
         token = self.user_info.get_token()
 
-        input_text = self.conversation_history[-1]+"\n```. token is "+self.user_info.get_token()+"```\n"
-        response = self.conversation_agent.invoke({"input": input_text})
+        input_text = self.conversation_history[-1]+".token is "+self.user_info.get_token()
+        # input_text = self.conversation_history[-1]
+        print(input_text)
+        response = self.conversation_agent.invoke({"input": input_text, "chat_history": self.conversation_history})
 
         ai_message = "AI:"+str(response["output"])
         self.conversation_history.append(ai_message)
@@ -89,7 +91,7 @@ class ConversationAgent():
 
     def step_rdmp(self):
         token = self.user_info.get_token()
-        rdmp_fx = get_observation(token)
+        rdmp_fx = get_observation(key=token)
         # question = self.conversation_history[-2]
         # history_text = self.conversation_history
         # ec_message = ""

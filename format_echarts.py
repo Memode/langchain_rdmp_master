@@ -51,35 +51,34 @@ class EchartsBuilder:
         print(json_str, type(json_str))
         try:
             data = json.loads(json_str)
+
+            try:
+                # 尝试访问一个不存在的键
+                self.x_axis = data["data"]["categories"]
+            except KeyError:
+                # 如果发生KeyError，执行以下代码
+                self.x_axis = None
+
+            try:
+                self.y_axis = data["data"]["series"]
+            except KeyError:
+                self.y_axis = None
+
+            try:
+                self.chart_type = data["chart_type"]
+            except KeyError:
+                self.chart_type = None
+
+
+
+            if self.chart_type.lower() == "bar":
+                return self.build_bar_chart()
+            if self.chart_type.lower() == "line":
+                return self.build_line_chart()
+            if self.chart_type.lower() == "pie":
+                return self.build_pie_chart()
         except KeyError:
-            print(KeyError)
             return None
-
-        try:
-            # 尝试访问一个不存在的键
-            self.x_axis = data["data"]["categories"]
-        except KeyError:
-            # 如果发生KeyError，执行以下代码
-            self.x_axis = None
-
-        try:
-            self.y_axis = data["data"]["series"]
-        except KeyError:
-            self.y_axis = None
-
-        try:
-            self.chart_type = data["chart_type"]
-        except KeyError:
-            self.chart_type = None
-
-
-
-        if self.chart_type.lower() == "bar":
-            return self.build_bar_chart()
-        if self.chart_type.lower() == "line":
-            return self.build_line_chart()
-        if self.chart_type.lower() == "pie":
-            return self.build_pie_chart()
 
     def build_bar_chart(self):
         bar = Bar()
@@ -183,8 +182,64 @@ if __name__ == "__main__":
 
     '''
 
-    # ec = EchartsBuilder()
-    # st_pyecharts(ec.build_chart(json_data1), height=500)
+
+
+if __name__ == '__main__':
+    astr = """
+    {
+  "chart_type": "bar",
+  "data": {
+    "categories": [
+      "终端结算积分",
+      "主套餐新增结算积分",
+      "主套餐迁转结算积分",
+      "家宽业务裸宽结算积分",
+      "家宽业务融合结算积分",
+      "业务办理服务费结算积分",
+      "业务办理手续费结算积分",
+      "智家结算积分",
+      "权益及新业务结算积分",
+      "大屏结算积分",
+      "流量结算积分",
+      "政企业务结算积分",
+      "代收费结算积分",
+      "合约结算积分",
+      "激励费用结算积分",
+      "上月负值递延结算积分",
+      "小额酬金调剂结算积分",
+      "精准营销结算积分"
+    ],
+    "series": [
+      {
+        "name": "NX.01.01.02.001.14 当月详细结算积分",
+        "data": [
+          A036,
+          A048,
+          A057,
+          A076,
+          A087,
+          A096,
+          A103,
+          A112,
+          A120,
+          A128,
+          A138,
+          A147,
+          A156,
+          A161,
+          A171,
+          A172,
+          A173,
+          A182
+        ]
+      }
+    ]
+  }
+}
+
+    """
+    ec = EchartsBuilder()
+    st_pyecharts(ec.build_chart(astr), height=500)
 
 
 

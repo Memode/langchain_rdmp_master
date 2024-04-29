@@ -50,7 +50,7 @@ Begin!
 \n{chat_history}
 \nuser’s question：
 \n{question}
-\ntoken is :
+\ntoken:
 \n{token}
 \nyour answer：
 \n{answer}
@@ -136,9 +136,9 @@ ECHARTS_PROMPT = """
 TEMPLATE_SQL = """
     请通过写的sql代码来回答对应问题，依据如下数据库信息{info}，
     \n需要回答的问题是:{question}
-    \n 历史信息{chat_history} 
+    \n历史信息{chat_history} 
     \n注意仅需要通过sql代码回答，不需要文字
-    \n 代码形式如下:'''sql\n...\n'''
+    \nsql代码形式如下:```sql\n...\n```'''
 """
 
 TEMPLATE_SQL_RES = """
@@ -156,9 +156,9 @@ TEMPLATE_ECHART_JSON = """
     filling in the type_name according to the current data theme, for example, "A channel settlement points data" is "A channel settlement points", and so on. 
     You need to validate the generated JSON format data; if the validation fails, you need to regenerate it until it finally meets the requirements and passes the validation.
     Goal: Only convert one type of chart, ensuring strict adherence to the example format for the conversion. 
-    The entire result must be output, and instances of "other settlement points types, etc." are not allowed.
-    answer is : '''answer\n...\n''' \n 
-    json code is :'''json\n...\n'''
+    The entire result must be output, and instances of "other categories truncated for brevity, etc." are not allowed.
+    answer is : ```answer\n...\n``` \n 
+    json code is :```json\n...\n```
     Begin!
     \n 数据库信息{info}
     \n 需要网答问题是:{question} 
@@ -166,7 +166,7 @@ TEMPLATE_ECHART_JSON = """
     \n sql代码:{query} 
     \n sql代码执行结果: {response} \n
     \n注意仅需要通过json代码回答，不需要文字
-    \n 代码形式如下:'''json\n...\n'''
+    \n 代码形式如下:```json\n...\n```
     
     pie JSON Schema示例：
         {{

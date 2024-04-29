@@ -3,7 +3,7 @@ from agent import ConversationAgent, welcome_agent
 from build_prompt import PromptMessage
 from format_echarts import EchartsBuilder
 from streamlit_echarts import st_pyecharts
-from redis_tool import get_observation
+from redis_tool import get_user_info
 
 
 st.title('🤖渠道积分AI助手😜')
@@ -13,7 +13,7 @@ if "user_info" not in st.session_state:
     # 获取GET请求的查询参数
     token = st.query_params.token
     # token 用户鉴权
-    value = get_observation(key=token)
+    value = get_user_info(db=1, key=token)
 
 if value is None:
     st.error("无效Token，请重新登录！")
